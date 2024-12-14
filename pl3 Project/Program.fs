@@ -47,26 +47,3 @@ let updateStudentList (): unit =
     updateClassStats ()
 
 
-
-    let searchStudents (query: string): unit =
-    let results: Student list = 
-        students 
-        |> List.filter (fun s -> 
-            s.Name.ToLower().Contains(query.ToLower()) || s.ID.ToString().Contains(query)
-        )
-    studentList.Items.Clear()
-    results
-    |> List.iter (fun s -> 
-        studentList.Items.Add(sprintf "ID: %d, Name: %s, Grades: %s" s.ID s.Name (String.Join(", ", s.Grades))) |> ignore
-    )
-
-let deleteStudent (): unit =
-    if studentList.SelectedIndex >= 0 then
-        let selectedStudent: Student = students.[studentList.SelectedIndex]
-
-        students <- students |> List.filter (fun s -> s <> selectedStudent)
-
-        updateStudentList ()
-        MessageBox.Show("Student deleted successfully.") |> ignore
-    else
-        MessageBox.Show("Please select a student to delete!") |> ignore
