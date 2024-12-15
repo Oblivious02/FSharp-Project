@@ -17,6 +17,8 @@ let gradesBox: TextBox = new TextBox(Top = 100, Left = 110, Width = 200)
 let studentList: ListBox = new ListBox(Top = 200, Left = 10, Width = 560, Height = 150)
 
 let searchBox: TextBox = new TextBox(Top = 170, Left = 100, Width = 200)
+let addButton = new Button(Text = "Add Student", Top = 140, Left = 100, Width = 100)
+let updateButton = new Button(Text = "Update Student", Top = 140, Left = 200, Width = 100)
 let searchButton: Button = new Button(Text = "Search", Top = 170, Left = 310)
 let deleteButton: Button = new Button(Text = "Delete Student", Top = 140, Left = 400, Width = 100)
 let statsLabel: Label = new Label(Top = 370, Left = 10, Width = 560, Height = 80)
@@ -168,40 +170,18 @@ let loadStudentsFromFile (filePath: string): unit =
             let json = File.ReadAllText(filePath)
             students <- JsonConvert.DeserializeObject<Student list>(json)
             updateStudentList ()
-            MessageBox.Show("Students loaded from file.") |> ignore
-        else
-            MessageBox.Show("No saved students found.") |> ignore
+          //  MessageBox.Show("Students loaded from file.") |> ignore
+       // else
+          //  MessageBox.Show("No saved students found.") |> ignore
     with
     | ex -> MessageBox.Show($"Error loading data: {ex.Message}") |> ignore
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-let form: Form = new Form(Text = "Student Grades Management System", Width = 700, Height = 500)
+let form: Form = new Form(Text = "Student Grades Management System", Width = 800, Height = 500)
 
 // Create other UI elements
 let nameLabel: Label = new Label(Text = "Name:", Top = 20, Left = 10)
 let idLabel: Label = new Label(Text = "ID:", Top = 60, Left = 10)
 let gradesLabel: Label = new Label(Text = "Grades:", Top = 100, Left = 10)
-
 let saveButton: Button = new Button(Text = "Save Changes", Top = 140, Left = 300, Width = 100)
 let checkRoleButton: Button = new Button(Text = "Check Role", Top = 140, Left = 400, Width = 100)
 let switchRoleButton: Button = new Button(Text = "Switch Role", Top = 140, Left = 500, Width = 100)
@@ -212,15 +192,20 @@ addButton.Click.Add (fun _ ->
     let name: string = nameBox.Text
     let id: int = int idBox.Text
     let grades = validateGrades gradesBox.Text
-    match grades with
-    | Some validGrades -> 
-        addStudent { ID = id; Name = name; Grades = validGrades }
-        updateStudentList ()
-        MessageBox.Show($"Student added: {name}") |> ignore
-        nameBox.Clear()
-        idBox.Clear()
-        gradesBox.Clear()
-    | None -> MessageBox.Show("Please enter valid grades.") |> ignore
+
+    // Check if the ID already exists in the dataset
+    if students |> List.exists (fun s -> s.ID = id) then
+        MessageBox.Show("A student with this ID already exists.") |> ignore
+    else
+        match grades with
+        | Some validGrades -> 
+            addStudent { ID = id; Name = name; Grades = validGrades }
+            updateStudentList ()
+            MessageBox.Show($"Student added: {name}") |> ignore
+            nameBox.Clear()
+            idBox.Clear()
+            gradesBox.Clear()
+        | None -> MessageBox.Show("Please enter valid grades.") |> ignore
 )
 
 updateButton.Click.Add (fun _ -> updateStudent ())
