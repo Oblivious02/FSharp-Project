@@ -130,6 +130,50 @@ idBox.KeyPress.Add(fun e ->
         e.Handled <- true
 )
 
+let checkUserRole() =
+    if isAdmin then
+        MessageBox.Show("You are Admin. You have full permissions.") |> ignore
+    else
+        MessageBox.Show("You are Viewer. You have view-only permissions.") |> ignore
+
+// Function to switch the role
+let switchRole() =
+    isAdmin <- not isAdmin
+    if isAdmin then
+        MessageBox.Show("Switched to Admin. You now have full permissions.") |> ignore
+        // Enable admin actions
+        updateButton.Enabled <- true
+        deleteButton.Enabled <- true
+        addButton.Enabled <- true
+    else
+        MessageBox.Show("Switched to Viewer. You now have view-only permissions.") |> ignore
+        // Disable admin actions
+        updateButton.Enabled <- false
+        deleteButton.Enabled <- false
+        addButton.Enabled <- false
+
+// Function to save students to a JSON file
+let saveStudentsToFile (filePath: string): unit =
+    try
+        let json = JsonConvert.SerializeObject(students, Formatting.Indented)
+        File.WriteAllText(filePath, json)
+        MessageBox.Show("Students saved to file.") |> ignore
+    with
+    | ex -> MessageBox.Show($"Error saving data: {ex.Message}") |> ignore
+
+// Function to load students from a JSON file
+let loadStudentsFromFile (filePath: string): unit =
+    try
+        if File.Exists(filePath) then
+            let json = File.ReadAllText(filePath)
+            students <- JsonConvert.DeserializeObject<Student list>(json)
+            updateStudentList ()
+            MessageBox.Show("Students loaded from file.") |> ignore
+        else
+            MessageBox.Show("No saved students found.") |> ignore
+    with
+    | ex -> MessageBox.Show($"Error loading data: {ex.Message}") |> ignore
+
 
 
 
