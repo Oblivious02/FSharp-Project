@@ -23,7 +23,6 @@ let statsLabel: Label = new Label(Top = 370, Left = 10, Width = 560, Height = 80
 
 let filePath = @"C:\Users\ahmed noaman\Desktop\ConsoleApp1\students.json"
 
-// Function to add a student
 let addStudent (student: Student): unit =
     students <- student :: students
 
