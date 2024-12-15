@@ -134,3 +134,91 @@ idBox.KeyPress.Add(fun e ->
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+let form: Form = new Form(Text = "Student Grades Management System", Width = 700, Height = 500)
+
+// Create other UI elements
+let nameLabel: Label = new Label(Text = "Name:", Top = 20, Left = 10)
+let idLabel: Label = new Label(Text = "ID:", Top = 60, Left = 10)
+let gradesLabel: Label = new Label(Text = "Grades:", Top = 100, Left = 10)
+
+let saveButton: Button = new Button(Text = "Save Changes", Top = 140, Left = 300, Width = 100)
+let checkRoleButton: Button = new Button(Text = "Check Role", Top = 140, Left = 400, Width = 100)
+let switchRoleButton: Button = new Button(Text = "Switch Role", Top = 140, Left = 500, Width = 100)
+let saveToFileButton: Button = new Button(Text = "Save to File", Top = 140, Left = 600, Width = 100)
+
+// Add event handlers
+addButton.Click.Add (fun _ ->
+    let name: string = nameBox.Text
+    let id: int = int idBox.Text
+    let grades = validateGrades gradesBox.Text
+    match grades with
+    | Some validGrades -> 
+        addStudent { ID = id; Name = name; Grades = validGrades }
+        updateStudentList ()
+        MessageBox.Show($"Student added: {name}") |> ignore
+        nameBox.Clear()
+        idBox.Clear()
+        gradesBox.Clear()
+    | None -> MessageBox.Show("Please enter valid grades.") |> ignore
+)
+
+updateButton.Click.Add (fun _ -> updateStudent ())
+saveButton.Click.Add (fun _ -> saveUpdatedStudent ())
+checkRoleButton.Click.Add (fun _ -> checkUserRole())
+switchRoleButton.Click.Add (fun _ -> switchRole())
+saveToFileButton.Click.Add(fun _ -> saveStudentsToFile filePath)
+
+searchButton.Click.Add (fun _ ->
+    let query: string = searchBox.Text
+    if query <> "" then
+        searchStudents query
+    else
+        MessageBox.Show("Please enter a search term.") |> ignore
+)
+
+deleteButton.Click.Add (fun _ -> deleteStudent ())
+
+// Add elements to the form
+form.Controls.Add(nameLabel)
+form.Controls.Add(nameBox)
+form.Controls.Add(idLabel)
+form.Controls.Add(idBox)
+form.Controls.Add(gradesLabel)
+form.Controls.Add(gradesBox)
+form.Controls.Add(addButton)
+form.Controls.Add(updateButton)
+form.Controls.Add(saveButton)
+form.Controls.Add(studentList)
+form.Controls.Add(searchBox)
+form.Controls.Add(searchButton)
+form.Controls.Add(deleteButton)
+form.Controls.Add(statsLabel)
+form.Controls.Add(checkRoleButton)
+form.Controls.Add(switchRoleButton)
+form.Controls.Add(saveToFileButton)
+
+// Load students from file when the app starts
+// Load students from file and update the list
+loadStudentsFromFile filePath
+updateStudentList ()
+
+// Run the form
+[<STAThread>]
+do Application.Run(form)
