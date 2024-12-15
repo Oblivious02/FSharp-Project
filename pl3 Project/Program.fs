@@ -43,7 +43,7 @@ let updateClassStats (): unit =
             sprintf "Class Average: %.2f\nHighest Average: %.2f\nLowest Average: %.2f\nPass Count: %d\nFail Count: %d" 
                     classAverage highest lowest passCount failCount
 
-// Function to update the ListBox with students
+
 let updateStudentList (): unit =
     studentList.Items.Clear()
     students
