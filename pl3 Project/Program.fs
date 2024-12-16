@@ -23,7 +23,7 @@ let searchButton: Button = new Button(Text = "Search", Top = 170, Left = 310)
 let deleteButton: Button = new Button(Text = "Delete Student", Top = 140, Left = 400, Width = 100)
 let statsLabel: Label = new Label(Top = 370, Left = 10, Width = 560, Height = 80)
 
-let filePath = @"C:\Users\ahmed noaman\Desktop\ConsoleApp1\students.json"
+let filePath = @"F:\Ahmed Saber\faculty of computers and artfitial intelligance\Fsharp_Project\students.json"
 
 let addStudent (student: Student): unit =
     students <- student :: students
@@ -84,9 +84,14 @@ let deleteStudent (): unit =
 // Validate grades (ensure valid input and length)
 let validateGrades (gradesText: string): float list option =
     try
-        Some (gradesText.Split(',') |> Array.map float |> Array.toList)
+        let grades = gradesText.Split(',') |> Array.map float |> Array.toList
+        if grades |> List.exists (fun grade -> grade < 0.0 || grade > 100.0) then
+            None
+        else
+            Some grades
     with
         | _ -> None
+
 
 // Function to update a student
 let updateStudent (): unit =
@@ -192,21 +197,19 @@ addButton.Click.Add (fun _ ->
     let name: string = nameBox.Text
     let id: int = int idBox.Text
     let grades = validateGrades gradesBox.Text
-
-    // Check if the ID already exists in the dataset
-    if students |> List.exists (fun s -> s.ID = id) then
-        MessageBox.Show("A student with this ID already exists.") |> ignore
-    else
-        match grades with
-        | Some validGrades -> 
-            addStudent { ID = id; Name = name; Grades = validGrades }
-            updateStudentList ()
-            MessageBox.Show($"Student added: {name}") |> ignore
-            nameBox.Clear()
-            idBox.Clear()
-            gradesBox.Clear()
-        | None -> MessageBox.Show("Please enter valid grades.") |> ignore
+    match grades with
+    | Some validGrades ->
+        addStudent { ID = id; Name = name; Grades = validGrades }
+        updateStudentList ()
+        MessageBox.Show($"Student added: {name}") |> ignore
+        nameBox.Clear()
+        idBox.Clear()
+        gradesBox.Clear()
+    | None -> MessageBox.Show("Please enter valid grades. Grades must be between 0 and 100.") |> ignore
 )
+
+
+
 
 updateButton.Click.Add (fun _ -> updateStudent ())
 saveButton.Click.Add (fun _ -> saveUpdatedStudent ())
